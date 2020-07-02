@@ -1,5 +1,10 @@
 package io.invertase.firebase.messaging;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +22,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -30,6 +36,7 @@ import io.invertase.firebase.Utils;
 
 public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
   private static final String TAG = "RNFirebaseMessaging";
+  private static Map<String, ExecutorService> executors = new HashMap<>();
 
   RNFirebaseMessaging(ReactApplicationContext context) {
     super(context);
@@ -53,18 +60,28 @@ public class RNFirebaseMessaging extends ReactContextBaseJavaModule {
     return "RNFirebaseMessaging";
   }
 
+  public ExecutorService getExecutor() {
+    ExecutorService existingSingleThreadExecutor = executors.get(getName());
+    if (existingSingleThreadExecutor != null) return existingSingleThreadExecutor;
+    ExecutorService newSingleThreadExecutor = Executors.newSingleThreadExecutor();
+    executors.put(getName(), newSingleThreadExecutor);
+    return newSingleThreadExecutor;
+  }
+
   @ReactMethod
   public void getToken(Promise promise) {
-    try {
-      String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
-      String token = FirebaseInstanceId
-        .getInstance()
-        .getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE);
-      promise.resolve(token);
-    } catch (Throwable e) {
-      e.printStackTrace();
-      promise.reject("messaging/fcm-token-error", e.getMessage());
-    }
+    String senderId = FirebaseApp.getInstance().getOptions().getGcmSenderId();
+    Tasks
+      .call(getExecutor(), () -> FirebaseInstanceId.getInstance().getToken(senderId, FirebaseMessaging.INSTANCE_ID_SCOPE))
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult());
+        } else {
+          Exception e = task.getException();
+          e.printStackTrace();
+          promise.reject("messaging/fcm-token-error", e.getMessage());
+        }
+      });
   }
 
   @ReactMethod

@@ -1,8 +1,8 @@
 {
-  "name": "react-native-firebase",
+  "name": "@imstar15/react-native-firebase",
   "version": "5.2.5",
-  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
+  "author": "imstar15 <75360738@qq.com> (https://github.com/imstar15/react-native-firebase)",
+  "description": "This is the react-native-firebase modified by imstar15.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase.git"
+    "url": "https://github.com/imstar15/react-native-firebase.git"
   },
   "jest": {
     "preset": "jest-react-native",
@@ -107,7 +107,7 @@
   },
   "rnpm": {
     "android": {
-      "buildPatch": "    implementation project(':react-native-firebase')",
+      "buildPatch": "    implementation project(':@imstar15_react-native-firebase')",
       "packageImportPath": "import io.invertase.firebase.RNFirebasePackage;",
       "packageInstance": "new RNFirebasePackage()"
     }
