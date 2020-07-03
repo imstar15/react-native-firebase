@@ -1,6 +1,6 @@
 {
   "name": "@imstar15/react-native-firebase",
-  "version": "5.2.5",
+  "version": "5.2.6",
   "author": "imstar15 <75360738@qq.com> (https://github.com/imstar15/react-native-firebase)",
   "description": "This is the react-native-firebase modified by imstar15.",
   "main": "dist/index.js",
